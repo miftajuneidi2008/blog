@@ -15,7 +15,7 @@ import {
   SelectLabel,
   SelectTrigger,
   SelectValue,
-} from "@/components/ui/select"
+} from "@/components/ui/select";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { ArticleSchema, ArticleSchemaType } from "@/schema/Schema";
@@ -24,12 +24,13 @@ import { Label } from "@radix-ui/react-label";
 import { ChevronLeft } from "lucide-react";
 import Link from "next/link";
 import React from "react";
-import { useForm } from "react-hook-form";
+import { Controller, useForm } from "react-hook-form";
 
 const AddArticle = () => {
   const {
     register,
     handleSubmit,
+    control,
     formState: { errors },
     reset,
     setValue,
@@ -37,13 +38,14 @@ const AddArticle = () => {
     resolver: zodResolver(ArticleSchema),
     defaultValues: {
       article_title: "",
+      article_category: "Programming",
       article_photo: undefined,
       article_description: "",
     },
     mode: "onChange",
   });
 
-  const onSubmit = (data: ArticleSchemaType) => {
+  const onSubmit = async (data: ArticleSchemaType) => {
     console.log(data);
   };
   return (
@@ -71,12 +73,11 @@ const AddArticle = () => {
             <form onSubmit={handleSubmit(onSubmit)}>
               <div className="flex flex-col gap-6">
                 <div className="flex flex-col gap-2">
-                  <Label htmlFor="category_name">Category Name</Label>
+                  <Label htmlFor="article_title">Article Title</Label>
                   <Input
                     {...register("article_title")}
                     type="text"
-                    id="category_name"
-                    name="category_name"
+                    id="article_title"
                     placeholder="Article title"
                     required
                   />
@@ -88,21 +89,36 @@ const AddArticle = () => {
                 </div>
                 <div>
                   <Label htmlFor="article_category">Article Category</Label>
-                  <Select>
-                    <SelectTrigger className="w-full">
-                      <SelectValue placeholder="Select a fruit" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectGroup>
-                        <SelectLabel>Fruits</SelectLabel>
-                        <SelectItem value="apple">Apple</SelectItem>
-                        <SelectItem value="banana">Banana</SelectItem>
-                        <SelectItem value="blueberry">Blueberry</SelectItem>
-                        <SelectItem value="grapes">Grapes</SelectItem>
-                        <SelectItem value="pineapple">Pineapple</SelectItem>
-                      </SelectGroup>
-                    </SelectContent>
-                  </Select>
+                  <Controller
+                    name="article_category"
+                    control={control}
+                    render={({ field }) => (
+                      <Select
+                        onValueChange={field.onChange}
+                        value={field.value}
+                      >
+                        <SelectTrigger className="w-full">
+                          <SelectValue placeholder="Select a fruit" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectGroup>
+                            <SelectLabel>Article Category</SelectLabel>
+                            <SelectItem value="d">Select Title</SelectItem>
+                            <SelectItem value="apple">Apple</SelectItem>
+                            <SelectItem value="banana">Banana</SelectItem>
+                            <SelectItem value="blueberry">Blueberry</SelectItem>
+                            <SelectItem value="grapes">Grapes</SelectItem>
+                            <SelectItem value="pineapple">Pineapple</SelectItem>
+                          </SelectGroup>
+                        </SelectContent>
+                      </Select>
+                    )}
+                  />
+                  {errors.article_category && (
+                    <p className="text-red-500">
+                      {errors.article_category?.message}
+                    </p>
+                  )}
                 </div>
                 <div className="flex flex-col gap-2">
                   <Label htmlFor="category_photo">Category Photo</Label>
